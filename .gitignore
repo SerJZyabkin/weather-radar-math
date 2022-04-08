@@ -112,4 +112,4 @@ ENV/
 
 #
 db/
-*/main.py*
+src/scattering_simulation/main.py
