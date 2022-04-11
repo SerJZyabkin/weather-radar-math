@@ -154,16 +154,10 @@ def DROP(RAT):
     return RAT
 
 def CONST(NGAUSS, NMAX, MMAX, P, X, W, AN, ANN, S, SS, NP, EPS):
-    X = np.zeros(NPNG2)
-    W = np.zeros(NPNG2)
     X1 = np.zeros(NPNG1)
     W1 = np.zeros(NPNG1)
     X2 = np.zeros(NPNG1)
     W2 = np.zeros(NPNG1)
-    S = np.zeros(NPNG2)
-    SS = np.zeros(NPNG2)
-    AN = np.zeros(NPN1)
-    ANN = np.zeros([NPN1, NPN1])
     DD = np.zeros(NPN1)
 
     for N in range(NMAX):
@@ -193,14 +187,39 @@ def CONST(NGAUSS, NMAX, MMAX, P, X, W, AN, ANN, S, SS, NP, EPS):
         for I in range(NGAUSS):
             W[NG - I + 1] = W[I]
             X[NG - I + 1] = -X[I]
-        for I in range(NGAUSS):
-            Y = X[I]
-            Y = 1. / (1. - Y**2)
-            SS[I] = Y
-            SS[NG - I + 1] = Y
-            Y = np.sqrt(Y)
-            S[I] = Y
-            S[NG - I + 1] = Y
+    for I in range(NGAUSS):
+        Y = X[I]
+        Y = 1. / (1. - Y**2)
+        SS[I] = Y
+        SS[NG - I + 1] = Y
+        Y = np.sqrt(Y)
+        S[I] = Y
+        S[NG - I + 1] = Y
+    return X, W, AN, ANN, S, SS
+
+
+def VARY (LAM, MRR, MRI, A, EPS, NP, NGAUSS, X, P, PPI, PIR, PII, R, DR, DDR, DRR, DRI, NMAX):
+    NG = NGAUSS * 2
+    if NP > 0:
+        R, DR = RSP2(X, NG, A, EPS, NP, R, DR)
+
+def RSP2(X, NG, REV, EPS, N, R, DR):
+    DNP = N
+    DN = DNP**2.
+    DN4 = DN * 4.
+    EP = EPS**2
+    A = 1. + 1.5 * EP * (DN4 - 2.) / (DN4 - 1.)
+    I = (DNP + 0.1) * 0.5
+    I = 2. * I
+    if (I == N):
+        A = A - 3. * EPS * (1. + 0.25 * EP) / (DN - 1.)
+    R0 = REV * A**(-1./3.)
+    for I in range(NG):
+        XI = np.acos(X[I]) * DNP
+        RI = R0 * (1. + EPS * np.cos(XI))
+        R[I] = RI**2
+        DR[I] = -R0 * EPS * DNP * np.sin(XI) / RI
+    return R, DR
 
 
 
@@ -272,4 +291,4 @@ def main():
         if NGAUSS > NPNG1:
             print('NGAUSS =', NGAUSS, ' I.E. IS GREATER THAN NPNG1. EXECUTION TERMINATED')
             quit()
-        # CALL CONST(NGAUSS,NMAX,MMAX,P,X,W,AN,ANN,S,SS,NP,EPS)
+        X, W, AN, ANN, S, SS = CONST(NGAUSS,NMAX,MMAX,P,X,W,AN,ANN,S,SS,NP,EPS)
