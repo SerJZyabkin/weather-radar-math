@@ -56,3 +56,12 @@ def factory_normalized_gamma_distribution(number_concentration: float, shape: fl
                                                                                               delta_particle_size)
 
     return normalized_gamma_distribution
+
+
+def factory_normalized_exponential_distribution(intersept: float, slope: float, normalized_particle_size: float):
+
+    def exponential_distribution(particle_size: float):
+        delta_particle_size = particle_size / normalized_particle_size
+        return intersept * np.exp(-slope * delta_particle_size)
+
+    return exponential_distribution

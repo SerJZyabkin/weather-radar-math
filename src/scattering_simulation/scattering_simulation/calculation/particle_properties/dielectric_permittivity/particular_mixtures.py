@@ -5,17 +5,25 @@
 import numpy as np
 from .lossy_medium import get_ice_dielectric_constant, get_water_dielectric_constant, get_air_dielectric_constant
 from .medium_mixture import get_mixing_three_components
+from ...common_constants import density_ice, density_water
 
 
-def get_mixing_for_wet_snow(wave_length: float, temperature: float, ro_ds: float, gamma_w: float,
-                            d_ds: float, d_w: float) -> complex:
-    # Расчет плотности воды после таяния при предположении, что масса частицы сохраняется, а потом и тающего снега
-    _ro_w = ro_ds * np.power(d_ds, 3.) / np.power(d_w, 3.)
-    _ro_ws = ro_ds * (1 - np.square(gamma_w)) + _ro_w * np.square(gamma_w)
+def get_mixing_for_wet_snow(wave_length: float, temperature: float, density_ds: float, melt_percent: float) -> complex:
+    """
+    Расчет плотности воды после таяния при предположении, что масса частицы сохраняется, а потом и тающего снега
+
+    :param wave_length:
+    :param temperature:
+    :param density_ds:
+    :param melt_percent:
+    :return:
+    """
+    _sqr_melt_percent = np.power(melt_percent, 2.)
+    _density_ws = density_ds * (1 - _sqr_melt_percent) + density_water * _sqr_melt_percent
 
     # теперь, когда известны плотности для всех трех компонент, можно получить их доли объемов f
-    _f_w = gamma_w * _ro_ws / _ro_w
-    _f_i = (1 - gamma_w) * _ro_ws / ro_ds
+    _f_w = melt_percent * _density_ws / density_water
+    _f_i = (1 - melt_percent) * _density_ws / density_ice
     _f_a = 1 - _f_w - _f_i
 
     # Диэлектрические проницаемости компонентов
