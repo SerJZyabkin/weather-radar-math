@@ -1,8 +1,3 @@
-C   New release including the LAPACK matrix inversion procedure.
-C   We thank Cory Davis (University of Edinburgh) for pointing
-C   out the possibility of replacing the proprietary NAG matrix
-C   inversion routine by the public-domain LAPACK equivalent.
-
 C   CALCULATION OF THE AMPLITUDE AND PHASE MATRICES FOR                 
 C   A PARTICLE WITH AN AXIALLY SYMMETRIC SHAPE                   
                                                                        
@@ -10,72 +5,72 @@ C   This version of the code uses DOUBLE PRECISION variables,
 C   is applicable to spheroids, finite circular cylinders,            
 C   Chebyshev particles, and generalized Chebyshev particles
 C   (distorted water drops), and must be used along with the 
-C   accompanying files lpd.f and ampld.par.f.                
+C   accompanying file ampld.par.f.                
                                                                        
 C   Last update 08/06/2005                                               
                                                                        
-C   The code has been developed by Michael Mishchenko at the NASA
-C   Goddard Institute for Space Studies, New York.  The development
-C   of the code was supported by the NASA Radiation Sciences Program.
-
-C   The code can be used without limitations in any not-for-
-C   profit scientific research.  We only request that in any
-C   publication using the code the source of the code be acknowledged
-C   and relevant references (see below) be made.
-
-C   The computational method is based on the T-matrix approach
-C   [P. C. Waterman, Phys. Rev. D 3, 825 (1971)], also known as
-C   the extended boundary condition method.  The method was
-C   improved in the following papers:
-
-C   1.  M. I. Mishchenko and L. D. Travis, T-matrix computations
-C       of light scattering by large spheroidal particles,
-C       Opt. Commun., vol. 109, 16-21 (1994).
-C
-C   2.  M. I. Mishchenko, L. D. Travis, and A. Macke, Scattering
-C       of light by polydisperse, randomly oriented, finite
-C       circular cylinders, Appl. Opt., vol. 35, 4927-4940 (1996).
-C
-C   3.  D. J. Wielaard, M. I. Mishchenko, A. Macke, and B. E. Carlson,
-C       Improved T-matrix computations for large, nonabsorbing and
-C       weakly absorbing nonspherical particles and comparison
-C       with geometrical optics approximation, Appl. Opt., vol. 36,
-C       4305-4313 (1997).
-C
-C   A general review of the T-matrix approach can be found in
-C
-C   4.  M. I. Mishchenko, L. D. Travis, and D. W. Mackowski,
-C       T-matrix computations of light scattering by nonspherical
-C       particles:  a review, J. Quant. Spectrosc. Radiat.
-C       Transfer, vol. 55, 535-575 (1996).
-C
+C   The code has been developed by Michael Mishchenko at the NASA      
+C   Goddard Institute for Space Studies, New York.  The development    
+C   of the code was supported by the NASA Radiation Science Program
+C   and the NASA FIRE III program.                                                  
+C   The code may be used without limitations in any not-for-      
+C   profit scientific research.  The only request is that in any       
+C   publication using the code the source of the code be acknowledged  
+C   and relevant references be made.                                   
+                                                                       
+C   The computational method is based on the T-matrix approach         
+C   [P. C. Waterman, Phys. Rev. D 3, 825 (1971)], also known as        
+C   the extended boundary condition method.  The method was            
+C   improved in the following papers:                         
+                                                                       
+C   1.  M. I. Mishchenko and L. D. Travis, T-matrix computations       
+C       of light scattering by large spheroidal particles,             
+C       Opt. Commun., vol. 109, 16-21 (1994).                          
+C                                                                      
+C   2.  M. I. Mishchenko, L. D. Travis, and A. Macke, Scattering       
+C       of light by polydisperse, randomly oriented, finite            
+C       circular cylinders, Appl. Opt., vol. 35, 4927-4940 (1996).     
+C                                                                      
+C   3.  D. J. Wielaard, M. I. Mishchenko, A. Macke, and B. E. Carlson, 
+C       Improved T-matrix computations for large, nonabsorbing and     
+C       weakly absorbing nonspherical particles and comparison         
+C       with geometrical optics approximation, Appl. Opt., vol. 36,    
+C       4305-4313 (1997).                                             
+C                                                                      
+C   A general review of the T-matrix approach can be found in          
+C                                                                      
+C   4.  M. I. Mishchenko, L. D. Travis, and D. W. Mackowski,           
+C       T-matrix computations of light scattering by nonspherical      
+C       particles:  a review, J. Quant. Spectrosc. Radiat.             
+C       Transfer, vol. 55, 535-575 (1996).                             
+C                                                                      
 C   Additional useful information is contained in the paper
-C
-C   5.  M. I. Mishchenko and L. D. Travis, Capabilities and
-C       limitations of a current FORTRAN implementation of the
-C       T-matrix method for randomly oriented, rotationally
-C       symmetric scatterers, J. Quant. Spectrosc. Radiat. Transfer,
-C       vol. 60, 309-324 (1998).
-C
+C                                                                      
+C   5.  M. I. Mishchenko and L. D. Travis, Capabilities and            
+C       limitations of a current FORTRAN implementation of the         
+C       T-matrix method for randomly oriented, rotationally            
+C       symmetric scatterers, J. Quant. Spectrosc. Radiat. Transfer,   
+C       vol. 60, 309-324 (1998).                                       
+C                                                                      
 C   The definitions and notation used can also be found in
 C
-C   6.  M. I. Mishchenko, Calculation of the amplitude matrix
+C   6.  M. I. Mishchenko, J. W. Hovenier, and L. D. Travis, Concepts,
+C       terms, notation.  In "Light Scattering by Nonspherical
+C       Particles:  Theory, Measurements, and Applications," 
+C       edited by M. I. Mishchenko, J. W. Hovenier, and L. D. Travis,
+C       Acedemic Press, San Diego, 1999, pp. 3-27
+C
+C   and especially
+C
+C   7.  M. I. Mishchenko, Calculation of the amplitude matrix
 C       for a nonspherical particle in a fixed orientation,
 C       Appl. Opt. vol. 39, 1026-1031 (2000).
 
-C   These papers are available in the .pdf format at the web site
-C
-C   http://www.giss.nasa.gov/~crmim/publications/
-C
-C   or in hardcopy upon request from Michael Mishchenko
-C   Please e-mail your request to crmim@giss.nasa.gov.
-C
-C   A comprehensive book "Scattering, Absorption, and Emission of
-C   Light by Small Particles" (Cambridge University Press, Cambridge,
-C   2002) is also available in the .pdf format at the web site
-C
-C   http://www.giss.nasa.gov/~crmim/books.html
-
+C   Copies of these papers are available upon request from Michael     
+C   Mishchenko.  Please send your request to crmim@giss.nasa.gov.      
+C   They are also available in the PDF format at 
+C   http://www/giss/nasa.gov/~crmim (button "Publications On-Line")
+                                                                       
 C   One of the main advantages of the T-matrix method is that the      
 C   T-matrix for a given nonspherical particle needs to be computed    
 C   only once and then can be used any number of times for computing   
@@ -95,19 +90,47 @@ C   five times slower than this double-precision code.  The
 C   CPU time difference between the double-precision and extended-     
 C   precision codes can be larger on supercomputers.                   
                                                                        
-C   This is the first part of the full T-matrix code.  The second part,
-C   lpq.f, is completely independent of the first part. It contains no
-C   T-matrix-specific subroutines and can be compiled separately.
-C   The second part of the code replaces the previously implemented
-C   standard matrix inversion scheme based on Gaussian elimination
-C   by a scheme based on the LU factorization technique.
-C   As described in Ref. 3 above, the use of the LU factorization is
-C   especially beneficial for nonabsorbing or weakly absorbing particles.
-C   In this code we use the LAPACK implementation of the LU factorization
-C   scheme. LAPACK stands for Linear Algebra PACKage. The latter is
-C   publicly available at the following internet site:
-C
-C   http://www.netlib.org/lapack/
+C   This is the first part of the full T-matrix code.  As explained    
+C   below, it can be used without the second part.  The second part    
+C   can be obtained separately provided that a mandatory requirement   
+C   is met, is completely independent of the first                     
+C   part, and contains no T-matrix-specific subroutines.               
+C   The second part of the code replaces the standard matrix inversion 
+C   scheme based on Gaussian elimination by a scheme based on the      
+C   LU factorization technique.                                        
+C   As described in Ref. 3 above, the use of the LU factorization      
+C   is especially beneficial for nonabsorbing or weakly absorbing      
+C   particles.  Since the second part of the code contains modified    
+C   NAG Library subroutines, the users of the code are required to     
+C   have a Fortran NAG Library licence.  (NAG stands for Numerical     
+C   Algorithms Group, Oxford, UK.)                                     
+
+C   In order to receive the second part of the code via e-mail,        
+C   send an e-mail message to Michael Mishchenko at                    
+C   crmim@giss.nasa.gov explicitly indicating that you or              
+C   your organization have a Fortran NAG Library licence.              
+                                                                       
+C   You may not use the second part of the code if you do not have a   
+C   NAG Library licence.  In that case THIS FIRST PART OF THE T-MATRIX  
+C   CODE CAN STILL BE USED, but needs the following two changes:       
+C                                                                      
+C   (1) in the main program use                                        
+C                                                                      
+C     ICHOICE=2                                                        
+C                                                                      
+C   instead of                                                         
+C                                                                      
+C     ICHOICE=1                                                        
+C                                                                      
+C   (2) in the subroutine TT, comment out the following lines:         
+C                                                                      
+C          CALL F07ARF(NNMAX,NNMAX,ZQ,NPN2,IPIV,INFO)                  
+C          CALL F07AWF(NNMAX,ZQ,NPN2,IPIV,ZW,NPN2,INFO)                
+C                                                                      
+C   As described in Ref. 3 above, these changes will affect the        
+C   performance of the code only for nonabsorbing or weakly            
+C   absorbing particles (imaginary part of the refractive              
+C   index smaller than about 0.001).                                   
  
                                                                        
 C   INPUT PARAMETERS:                                                  
@@ -278,22 +301,23 @@ C  OPEN FILES *******************************************************
  
 C  INPUT DATA ********************************************************
  
-      AXI=20D0
-      RAT=1 D0 
-      LAM=32. D0
-      MRR=7.6 D0
-      MRI=2.6 D0 
+      AXI=10D0
+      RAT=0.1 D0 
+      LAM=DACOS(-1D0)*2D0
+      MRR=1.5 D0
+      MRI=0.02 D0 
       EPS=0.5 D0 
       NP=-1
       DDELT=0.001D0 
       NDGS=2
 
       P=DACOS(-1D0)
+      ICHOICE=1
       NCHECK=0
       IF (NP.EQ.-1.OR.NP.EQ.-2) NCHECK=1
       IF (NP.GT.0.AND.(-1)**NP.EQ.1) NCHECK=1
-      WRITE (6,5454) NCHECK
- 5454 FORMAT ('NCHECK=',I1)
+      WRITE (6,5454) ICHOICE,NCHECK
+ 5454 FORMAT ('ICHOICE=',I1,'  NCHECK=',I1)
       IF (DABS(RAT-1D0).GT.1D-8.AND.NP.EQ.-1) CALL SAREA (EPS,RAT)
       IF (DABS(RAT-1D0).GT.1D-8.AND.NP.GE.0) CALL SURFCH(NP,EPS,RAT)
       IF (DABS(RAT-1D0).GT.1D-8.AND.NP.EQ.-2) CALL SAREAC (EPS,RAT)
@@ -1820,45 +1844,324 @@ C**********************************************************************
      *       A(NPN2,NPN2),C(NPN2,NPN2),D(NPN2,NPN2),E(NPN2,NPN2)
       REAL*8 TR1(NPN2,NPN2),TI1(NPN2,NPN2)
       COMPLEX*16 ZQ(NPN2,NPN2),ZW(NPN2)
+      COMPLEX*16 ZQR(NPN2,NPN2),ZAFAC(NPN2,NPN2),ZT(NPN2,NPN2),
+     &           ZTHETA(NPN2,NPN2)
       INTEGER IPIV(NPN2),IPVT(NPN2)
+      COMMON /CHOICE/ ICHOICE
       COMMON /CT/ TR1,TI1
       COMMON /CTT/ QR,QI,RGQR,RGQI
       NDIM=NPN2
       NNMAX=2*NMAX
-
-C     Matrix inversion from LAPACK
-
-      DO I=1,NNMAX
-           DO J=1,NNMAX
-              ZQ(I,J)=DCMPLX(QR(I,J),QI(I,J))
+      IF (ICHOICE.EQ.2) GO TO 5
+ 
+C	Inversion from NAG-LIB or Waterman's method
+ 
+	DO I=1,NNMAX
+	   DO J=1,NNMAX
+	      ZQ(I,J)=DCMPLX(QR(I,J),QI(I,J))
+	      ZAFAC(I,J)=ZQ(I,J)
+	   ENDDO
+	ENDDO
+	IF (ICHOICE.EQ.1) THEN
+	   INFO=0
+           CALL F07ARF(NNMAX,NNMAX,ZQ,NPN2,IPIV,INFO)
+           IF (INFO.NE.0) WRITE (6,1100) INFO
+           CALL F07AWF(NNMAX,ZQ,NPN2,IPIV,ZW,NPN2,INFO)
+           IF (INFO.NE.0) WRITE (6,1100) INFO
+ 1100      FORMAT ('WARNING:  info=', i2)
+	   DO I=1,NNMAX
+	      DO J=1,NNMAX
+	         TR=0D0
+	         TI=0D0
+	         DO K=1,NNMAX
+                    ARR=RGQR(I,K)
+                    ARI=RGQI(I,K)
+                    AR=ZQ(K,J)
+                    AI=DIMAG(ZQ(K,J))
+                    TR=TR-ARR*AR+ARI*AI
+                    TI=TI-ARR*AI-ARI*AR
+                 ENDDO
+	         TR1(I,J)=TR
+	         TI1(I,J)=TI
+	      ENDDO
+	   ENDDO
+ 
+	   ELSE
+	   IFAIL=0
+C          CALL F01RCF(NNMAX,NNMAX,ZAFAC,NPN2,ZTHETA,IFAIL)
+C          CALL F01REF('S',NNMAX,NNMAX,NNMAX,ZAFAC,
+C    &                 NPN2,ZTHETA,ZW,IFAIL)
+	   DO I=1,NNMAX
+	      DO J=1,NNMAX
+	         ZQ(I,J)=DCMPLX(DREAL(ZAFAC(I,J)),
+     &                  -DIMAG(ZAFAC(I,J)))
+	      ENDDO
+	   ENDDO
+	   DO I=1,NNMAX
+	      DO J=1,NNMAX
+                 IF (I.LE.NNMAX/2.AND.I.EQ.J) THEN
+	            D(I,J)=-1D0
+                    ELSE IF (I.GT.NNMAX/2.AND.I.EQ.J) THEN
+	               D(I,J)=1D0
+	               ELSE
+	               D(I,J)=0D0
+	         ENDIF
+              ENDDO
            ENDDO
-      ENDDO
-      INFO=0
-      CALL ZGETRF(NNMAX,NNMAX,ZQ,NPN2,IPIV,INFO)
-      IF (INFO.NE.0) WRITE (6,1100) INFO
-      CALL ZGETRI(NNMAX,ZQ,NPN2,IPIV,ZW,NPN2,INFO)
-      IF (INFO.NE.0) WRITE (6,1100) INFO
+	   DO I=1,NNMAX
+	      DO J=1,NNMAX
+	         ZT(I,J)=DCMPLX(0D0,0D0)
+	         DO K=1,NNMAX
+	            ZT(I,J)=ZT(I,J)+D(I,I)
+     &                     *ZQ(I,K)*D(K,K)*ZQ(J,K)
+	         ENDDO
+	         ZT(I,J)=0.5D0*(ZT(I,J)-D(I,J)**2)
+	         TR1(I,J)=DREAL(ZT(I,j))
+	         TI1(I,J)=DIMAG(ZT(i,j))
+              ENDDO
+	   ENDDO
+	ENDIF
+		
+	GOTO 70
+ 
+C  Gaussian elimination
 
- 1100 FORMAT ('WARNING:  info=', i2)
-      DO I=1,NNMAX
-         DO J=1,NNMAX
-            TR=0D0
-            TI=0D0
-            DO K=1,NNMAX
-                 ARR=RGQR(I,K)
-                 ARI=RGQI(I,K)
-                 AR=ZQ(K,J)
-                 AI=DIMAG(ZQ(K,J))
-                 TR=TR-ARR*AR+ARI*AI
-                 TI=TI-ARR*AI-ARI*AR
-            ENDDO
-            TR1(I,J)=TR
-            TI1(I,J)=TI
-         ENDDO
-      ENDDO
+    5 DO 10 N1=1,NNMAX
+         DO 10 N2=1,NNMAX
+            F(N1,N2)=QI(N1,N2)
+   10 CONTINUE
+      IF (NCHECK.EQ.1) THEN
+          CALL INV1(NMAX,F,A)
+        ELSE
+          CALL INVERT(NDIM,NNMAX,F,A,COND,IPVT,WORK,B) 
+      ENDIF
+      CALL PROD(QR,A,C,NDIM,NNMAX)
+      CALL PROD(C,QR,D,NDIM,NNMAX)
+      DO 20 N1=1,NNMAX
+           DO 20 N2=1,NNMAX
+                C(N1,N2)=D(N1,N2)+QI(N1,N2)
+   20 CONTINUE
+      IF (NCHECK.EQ.1) THEN
+          CALL INV1(NMAX,C,QI)
+        ELSE
+          CALL INVERT(NDIM,NNMAX,C,QI,COND,IPVT,WORK,B) 
+      ENDIF
+      CALL PROD(A,QR,D,NDIM,NNMAX)
+      CALL PROD(D,QI,QR,NDIM,NNMAX)
+ 
+      CALL PROD(RGQR,QR,A,NDIM,NNMAX)
+      CALL PROD(RGQI,QI,C,NDIM,NNMAX)
+      CALL PROD(RGQR,QI,D,NDIM,NNMAX)
+      CALL PROD(RGQI,QR,E,NDIM,NNMAX)
+      DO 30 N1=1,NNMAX
+           DO 30 N2=1,NNMAX
+                TR1(N1,N2)=-A(N1,N2)-C(N1,N2)
+                TI1(N1,N2)= D(N1,N2)-E(N1,N2)
+   30 CONTINUE
+   70 RETURN
+      END
+ 
+C********************************************************************
+ 
+      SUBROUTINE PROD(A,B,C,NDIM,N)
+      REAL*8 A(NDIM,N),B(NDIM,N),C(NDIM,N),cij
+      DO 10 I=1,N
+           DO 10 J=1,N
+                CIJ=0d0
+                DO 5 K=1,N
+                     CIJ=CIJ+A(I,K)*B(K,J)
+    5           CONTINUE
+                C(I,J)=CIJ
+   10 CONTINUE
       RETURN
       END
-
+ 
+C**********************************************************************
+ 
+      SUBROUTINE INV1 (NMAX,F,A)
+      IMPLICIT REAL*8 (A-H,O-Z)
+      INCLUDE 'ampld.par.f'
+      REAL*8  A(NPN2,NPN2),F(NPN2,NPN2),B(NPN1),
+     *        WORK(NPN1),Q1(NPN1,NPN1),Q2(NPN1,NPN1),
+     &        P1(NPN1,NPN1),P2(NPN1,NPN1)
+      INTEGER IPVT(NPN1),IND1(NPN1),IND2(NPN1)
+      NDIM=NPN1
+      NN1=(DFLOAT(NMAX)-0.1D0)*0.5D0+1D0 
+      NN2=NMAX-NN1
+      DO 5 I=1,NMAX
+         IND1(I)=2*I-1
+         IF(I.GT.NN1) IND1(I)=NMAX+2*(I-NN1)
+         IND2(I)=2*I
+         IF(I.GT.NN2) IND2(I)=NMAX+2*(I-NN2)-1
+    5 CONTINUE
+      NNMAX=2*NMAX
+      DO 15 I=1,NMAX
+         I1=IND1(I)
+         I2=IND2(I)
+         DO 15 J=1,NMAX
+            J1=IND1(J)
+            J2=IND2(J)
+            Q1(J,I)=F(J1,I1)
+            Q2(J,I)=F(J2,I2)
+   15 CONTINUE
+      CALL INVERT(NDIM,NMAX,Q1,P1,COND,IPVT,WORK,B)
+      CALL INVERT(NDIM,NMAX,Q2,P2,COND,IPVT,WORK,B)
+      DO 30 I=1,NNMAX
+         DO 30 J=1,NNMAX
+            A(J,I)=0D0
+   30 CONTINUE
+      DO 40 I=1,NMAX
+         I1=IND1(I)
+         I2=IND2(I)
+         DO 40 J=1,NMAX
+            J1=IND1(J)
+            J2=IND2(J)
+            A(J1,I1)=P1(J,I)
+            A(J2,I2)=P2(J,I)
+   40 CONTINUE
+      RETURN
+      END
+ 
+C*********************************************************************
+ 
+      SUBROUTINE INVERT (NDIM,N,A,X,COND,IPVT,WORK,B)
+      IMPLICIT REAL*8 (A-H,O-Z)
+      REAL*8 A(NDIM,N),X(NDIM,N),WORK(N),B(N)
+      INTEGER IPVT(N)
+      CALL DECOMP (NDIM,N,A,COND,IPVT,WORK)
+      IF (COND+1D0.EQ.COND) PRINT 5,COND
+C     IF (COND+1D0.EQ.COND) STOP
+    5 FORMAT(' THE MATRIX IS SINGULAR FOR THE GIVEN NUMERICAL ACCURACY '
+     *      ,'COND = ',D12.6)
+      DO 30 I=1,N
+           DO 10 J=1,N
+                B(J)=0D0
+                IF (J.EQ.I) B(J)=1D0
+  10       CONTINUE
+           CALL SOLVE (NDIM,N,A,B,IPVT)
+           DO 30 J=1,N
+                X(J,I)=B(J)
+   30 CONTINUE
+      RETURN
+      END
+ 
+C********************************************************************
+ 
+      SUBROUTINE DECOMP (NDIM,N,A,COND,IPVT,WORK)
+      IMPLICIT REAL*8 (A-H,O-Z)
+      REAL*8 A(NDIM,N),COND,WORK(N)
+      INTEGER IPVT(N)
+      IPVT(N)=1
+      IF(N.EQ.1) GO TO 80
+      NM1=N-1
+      ANORM=0D0
+      DO 10 J=1,N
+          T=0D0
+          DO 5 I=1,N
+              T=T+DABS(A(I,J))
+    5     CONTINUE
+          IF (T.GT.ANORM) ANORM=T
+   10 CONTINUE
+      DO 35 K=1,NM1
+          KP1=K+1
+          M=K
+          DO 15 I=KP1,N
+              IF (DABS(A(I,K)).GT.DABS(A(M,K))) M=I
+   15     CONTINUE
+          IPVT(K)=M
+          IF (M.NE.K) IPVT(N)=-IPVT(N)
+          T=A(M,K)
+          A(M,K)=A(K,K)
+          A(K,K)=T
+          IF (T.EQ.0d0) GO TO 35
+          DO 20 I=KP1,N
+              A(I,K)=-A(I,K)/T
+   20     CONTINUE
+          DO 30 J=KP1,N
+              T=A(M,J)
+              A(M,J)=A(K,J)
+              A(K,J)=T
+              IF (T.EQ.0D0) GO TO 30
+              DO 25 I=KP1,N
+                  A(I,J)=A(I,J)+A(I,K)*T
+   25         CONTINUE
+   30     CONTINUE
+   35 CONTINUE
+      DO 50 K=1,N
+          T=0D0
+          IF (K.EQ.1) GO TO 45
+          KM1=K-1
+          DO 40 I=1,KM1
+              T=T+A(I,K)*WORK(I)
+   40     CONTINUE
+   45     EK=1D0
+          IF (T.LT.0D0) EK=-1D0
+          IF (A(K,K).EQ.0D0) GO TO 90
+          WORK(K)=-(EK+T)/A(K,K)
+   50 CONTINUE
+      DO 60 KB=1,NM1
+          K=N-KB
+          T=0D0
+          KP1=K+1
+          DO 55 I=KP1,N
+              T=T+A(I,K)*WORK(K)
+   55     CONTINUE
+          WORK(K)=T
+          M=IPVT(K)
+          IF (M.EQ.K) GO TO 60
+          T=WORK(M)
+          WORK(M)=WORK(K)
+          WORK(K)=T
+   60 CONTINUE
+      YNORM=0D0
+      DO 65 I=1,N
+          YNORM=YNORM+DABS(WORK(I))
+   65 CONTINUE
+      CALL SOLVE (NDIM,N,A,WORK,IPVT)
+      ZNORM=0D0
+      DO 70 I=1,N
+          ZNORM=ZNORM+DABS(WORK(I))
+   70 CONTINUE
+      COND=ANORM*ZNORM/YNORM
+      IF (COND.LT.1d0) COND=1D0
+      RETURN
+   80 COND=1D0
+      IF (A(1,1).NE.0D0) RETURN
+   90 COND=1D52
+      RETURN
+      END
+ 
+C**********************************************************************
+ 
+      SUBROUTINE SOLVE (NDIM,N,A,B,IPVT)
+      IMPLICIT REAL*8 (A-H,O-Z)
+      REAL*8 A(NDIM,N),B(N)
+      INTEGER IPVT(N)
+      IF (N.EQ.1) GO TO 50
+      NM1=N-1
+      DO 20 K=1,NM1
+          KP1=K+1
+          M=IPVT(K)
+          T=B(M)
+          B(M)=B(K)
+          B(K)=T
+          DO 10 I=KP1,N
+              B(I)=B(I)+A(I,K)*T
+   10     CONTINUE
+   20 CONTINUE
+      DO 40 KB=1,NM1
+          KM1=N-KB
+          K=KM1+1
+          B(K)=B(K)/A(K,K)
+          T=-B(K)
+          DO 30 I=1,KM1
+              B(I)=B(I)+A(I,K)*T
+   30     CONTINUE
+   40 CONTINUE
+   50 B(1)=B(1)/A(1,1)
+      RETURN
+      END
+ 
 C*****************************************************************
  
       SUBROUTINE SAREA (D,RAT)

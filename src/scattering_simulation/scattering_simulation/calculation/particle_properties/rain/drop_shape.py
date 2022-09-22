@@ -1,7 +1,13 @@
 from numpy import power
 
 
-def get_gamma_rain(diameter_eqi: float):
+def get_gamma_rain(diameter_eqi_mm: float):
+    """
+
+    :param diameter_eqi_mm: Эквивалентный диаметр в миллиметрах
+    :return:
+    """
+    diameter_eqi = 1000. * diameter_eqi_mm
     gamma = (0.9951 + 0.0251 * diameter_eqi - 0.03644 * power(diameter_eqi, 2.) + 0.005303 * power(diameter_eqi, 3.) -
              0.0002492 * power(diameter_eqi, 4.))
     return gamma

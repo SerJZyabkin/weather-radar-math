@@ -25,6 +25,7 @@ def get_mixing_for_wet_snow(wave_length: float, temperature: float, density_ds: 
     _f_w = melt_percent * _density_ws / density_water
     _f_i = (1 - melt_percent) * _density_ws / density_ice
     _f_a = 1 - _f_w - _f_i
+    print(_f_w, _f_a, _f_i, _density_ws, density_ice)
 
     # Диэлектрические проницаемости компонентов
     _eps_w = get_water_dielectric_constant(wave_length, temperature)

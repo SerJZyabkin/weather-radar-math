@@ -103,7 +103,7 @@ def GAUSS(N, IND1, IND2, Z, W):
             PC = X
             DJ = A
 
-            for J in range(1, N):
+            for J in range(1, int(N)):
                 DJ = DJ + 1
                 PA = PB
                 PB = PC
@@ -245,7 +245,7 @@ def CONST(NGAUSS, NMAX, MMAX, P, X, W, AN, ANN, S, SS, NP, EPS):
     else:
         NG1 = NGAUSS / 2.
         NG2 = NGAUSS - NG1
-        XX = -np.cos(np.atan(EPS))
+        XX = -np.cos(np.arctan(EPS))
         X1, W1 = GAUSS(NG1, 0, 0, X1, W1)
         X2, W2 = GAUSS(NG2, 0, 0, X2, W2)
         for I in range(NG1):
@@ -1451,16 +1451,22 @@ C     0.LE.X.LE.1
     return DV1, DV2
 
 
-def calculate(wavelength, Deq: float, epsilon, gamma, alpha_tilt, beta_tilt, theta):
+def calculate(wavelength, Deq: float, epsilon, gamma, alpha_tilt, beta_tilt, theta: list):
 
     # print(f'start', wavelength, Deq, epsilon, gamma, alpha_tilt, beta_tilt, theta)
 
-    if alpha_tilt < 0:
-        alpha_tilt += 360
     if beta_tilt < 0:
         beta_tilt += 360
-    if theta < 0:
-        theta += 360
+
+    if beta_tilt > 180:
+        beta_tilt -= 180
+        alpha_tilt += 180
+
+    alpha_tilt = alpha_tilt % 360
+
+    for i in range(len(theta)):
+        if theta[i] < 0:
+            theta[i] += 360
 
     # Входные данные, тестовые можно взять в description.txt
     AXI = 10   # Радиус эквивалентной сферы D
@@ -1696,10 +1702,10 @@ def calculate(wavelength, Deq: float, epsilon, gamma, alpha_tilt, beta_tilt, the
 
     ALPHA = alpha_tilt
     BETA = beta_tilt
-    THET0 = 0
-    THET = theta
-    PHI0 = 0
-    PHI = 0
+    THET0 = theta[0]
+    THET = theta[1]
+    PHI0 = theta[2]
+    PHI = theta[3]
 
     # AMPLITUDE MATRIX [Eqs. (2)-(4) of Ref. 6]
     S11, S12, S21, S22 = AMPL(NMAX, LAM, THET0, THET, PHI0, PHI, ALPHA, BETA)
