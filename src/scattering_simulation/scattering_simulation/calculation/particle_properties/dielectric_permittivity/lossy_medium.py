@@ -6,9 +6,8 @@
 Radar Polarimetry авторства Guifu Zhang.
 """
 import numpy as np
-from src.scattering_simulation.scattering_simulation.constants import LIGHTSPEED, EPSILON_ZERO
-from src.scattering_simulation.scattering_simulation.calculation.common_conversions import convert_to_frequency
-
+from ....constants import LIGHTSPEED, EPSILON_ZERO
+from ...common_conversions import convert_to_frequency
 
 def get_air_dielectric_constant(wavelength: float) -> complex:
     _re_epsilon = 1.0006

@@ -130,90 +130,106 @@ class SpheroidModel:
         return Zh, Zdr, LDR, ro_hv, Kdp
 
 def plot_all():
-    fig, ax = plt.subplots(2, 2)
     with open('ice_crystals.bin', 'rb') as fid:
         raw_bytes = fid.read()
-
         data_ic = np.frombuffer(raw_bytes, dtype=np.float)
         data_ic = np.array(data_ic.reshape([int(len(data_ic) / 5), 5]))
         for step in range(data_ic.shape[0]):
             data_ic[step, 0] = data_ic[step, 0] + random() * 6 - 10
         fid.close()
-        ax[0][0].plot(data_ic[:, 0], data_ic[:, 1], '+', color='lightblue')
-        ax[0][1].plot(data_ic[:, 0], data_ic[:, 2], '+', color='lightblue')
-        ax[1][0].plot(data_ic[:, 0], data_ic[:, 3], '+', color='lightblue')
-        ax[1][1].plot(data_ic[:, 0], data_ic[:, 4], '+', color='lightblue')
+
+    with open('dry_snow.bin', 'rb') as fid:
+        raw_bytes = fid.read()
+        data_ds = np.frombuffer(raw_bytes, dtype=np.float)
+        data_ds = np.array(data_ds.reshape([int(len(data_ds) / 5), 5]))
+        fid.close()
 
     with open('wet_snow.bin', 'rb') as fid:
         raw_bytes = fid.read()
-
         data_ws = np.frombuffer(raw_bytes, dtype=np.float)
         data_ws = np.array(data_ws.reshape([int(len(data_ws) / 5), 5]))
         for step in range(data_ws.shape[0]):
             data_ws[step, 0] = data_ws[step, 0] #+ random() * 6 - 10
         fid.close()
-        ax[0][0].plot(data_ws[:, 0], data_ws[:, 1], '+', color='darkblue')
-        ax[0][1].plot(data_ws[:, 0], data_ws[:, 2], '+', color='darkblue')
-        ax[1][0].plot(data_ws[:, 0], data_ws[:, 3], '+', color='darkblue')
-        ax[1][1].plot(data_ws[:, 0], data_ws[:, 4], '+', color='darkblue')
 
     with open('rain.bin', 'rb') as fid:
         raw_bytes = fid.read()
-
         data_r = np.frombuffer(raw_bytes, dtype=np.float)
         data_r = np.array(data_r.reshape([int(len(data_r) / 5), 5]))
         for step in range(data_r.shape[0]):
             data_r[step, 0] = data_r[step, 0] #+ random() * 6 - 10
         fid.close()
-        ax[0][0].plot(data_r[:, 0], data_r[:, 1], 'o', color='red')
-        ax[0][1].plot(data_r[:, 0], data_r[:, 2], 'o', color='red')
-        ax[1][0].plot(data_r[:, 0], data_r[:, 3], 'o', color='red')
-        ax[1][1].plot(data_r[:, 0], data_r[:, 4], 'o', color='red')
-
-    with open('dry_snow.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-
-        data_r = np.frombuffer(raw_bytes, dtype=np.float)
-        data_r = np.array(data_r.reshape([int(len(data_r) / 5), 5]))
-        fid.close()
-        ax[0][0].plot(data_r[:, 0], data_r[:, 1], '*', color='green')
-        ax[0][1].plot(data_r[:, 0], data_r[:, 2], '*', color='green')
-        ax[1][0].plot(data_r[:, 0], data_r[:, 3], '*', color='green')
-        ax[1][1].plot(data_r[:, 0], data_r[:, 4], '*', color='green')
 
     with open('drizzle.bin', 'rb') as fid:
         raw_bytes = fid.read()
-
         data_drizzle = np.frombuffer(raw_bytes, dtype=np.float)
         data_drizzle = data_drizzle.reshape([int(len(data_drizzle) / 5), 5])
         fid.close()
-        ax[0][0].plot(data_drizzle[:, 0], data_drizzle[:, 1], 'o', color='yellow')
-        ax[0][1].plot(data_drizzle[:, 0], data_drizzle[:, 2], 'o', color='yellow')
-        ax[1][0].plot(data_drizzle[:, 0], data_drizzle[:, 3], 'o', color='yellow')
-        ax[1][1].plot(data_drizzle[:, 0], data_drizzle[:, 4], 'o', color='yellow')
-        fid.close()
 
-    ax[0][0].set_xlim([-10, 70])
-    ax[0][0].set_ylim([-1, 5])
-    ax[0][1].set_xlim([-10, 70])
-    ax[0][1].set_ylim([-50, -10])
-    ax[1][0].set_xlim([-10, 70])
-    ax[1][0].set_ylim([0.975, 1.005])
-    ax[1][1].set_xlim([-10, 70])
-    ax[1][1].set_ylim([0, 15])
+    fig, ax = plt.subplots(2, 1)
+    ax[0].plot(data_ic[:, 0], data_ic[:, 1], '+', color='lightblue')
+    ax[1].plot(data_ic[:, 0], data_ic[:, 2], '+', color='lightblue')
+
+    ax[0].plot(data_ds[:, 0], data_ds[:, 1], '*', color='green')
+    ax[1].plot(data_ds[:, 0], data_ds[:, 2], '*', color='green')
+
+    ax[0].plot(data_ws[:, 0], data_ws[:, 1], '+', color='darkblue')
+    ax[1].plot(data_ws[:, 0], data_ws[:, 2], '+', color='darkblue')
+
+    ax[0].plot(data_r[:, 0], data_r[:, 1], 'o', color='red')
+    ax[1].plot(data_r[:, 0], data_r[:, 2], 'o', color='red')
+
+    ax[0].plot(data_drizzle[:, 0], data_drizzle[:, 1], 'o', color='yellow')
+    ax[1].plot(data_drizzle[:, 0], data_drizzle[:, 2], 'o', color='yellow')
+
+
+    ax[0].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
+    ax[1].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
+    ax[0].set_xlim([-70, 70])
+    ax[0].set_ylim([-1, 5])
+    ax[0].grid(True)
+    ax[1].set_xlim([-10, 70])
+    ax[1].set_ylim([-50, -10])
+    ax[1].grid(True)
+    plt.show()
+
+    fig, ax = plt.subplots(2, 1)
+    ax[0].plot(data_ic[:, 0], data_ic[:, 3], '+', color='lightblue')
+    ax[1].plot(data_ic[:, 0], data_ic[:, 4], '+', color='lightblue')
+    ax[0].plot(data_ds[:, 0], data_ds[:, 3], '*', color='green')
+    ax[1].plot(data_ds[:, 0], data_ds[:, 4], '*', color='green')
+
+    ax[0].plot(data_ws[:, 0], data_ws[:, 3], '+', color='darkblue')
+    ax[1].plot(data_ws[:, 0], data_ws[:, 4], '+', color='darkblue')
+
+    ax[0].plot(data_r[:, 0], data_r[:, 3], 'o', color='red')
+    ax[1].plot(data_r[:, 0], data_r[:, 4], 'o', color='red')
+
+    ax[0].plot(data_drizzle[:, 0], data_drizzle[:, 3], 'o', color='yellow')
+    ax[1].plot(data_drizzle[:, 0], data_drizzle[:, 4], 'o', color='yellow')
+
+
+    plt.legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
+    ax[0].set_xlim([-10, 70])
+    ax[0].set_ylim([0.975, 1.005])
+    ax[0].grid(True)
+    ax[1].set_xlim([-10, 70])
+    ax[1].set_ylim([0, 15])
+    ax[1].grid(True)
     plt.show()
 
 
 def calculate_all():
-    # data_ic = get_for_compare_ice_crystals()
-    # with open('ice_crystals.bin', 'wb') as fid:
-    #     fid.write(data_ic.tobytes())
+    data_ic = get_for_compare_ice_crystals()
+    with open('ice_crystals.bin', 'wb') as fid:
+        fid.write(data_ic.tobytes())
+        fid.close()
+    #
+    # data_ws = get_for_compare_wet_snow()
+    # with open('wet_snow.bin', 'wb') as fid:
+    #     fid.write(data_ws.tobytes())
     #     fid.close()
     #
-    data_ws = get_for_compare_wet_snow()
-    with open('wet_snow.bin', 'wb') as fid:
-        fid.write(data_ws.tobytes())
-        fid.close()
     # data_rain = get_for_compare_rain()
     # with open('rain.bin', 'wb') as fid:
     #     fid.write(data_rain.tobytes())
@@ -223,18 +239,18 @@ def calculate_all():
     # with open('dry_snow.bin', 'wb') as fid:
     #     fid.write(data_ds.tobytes())
     #     fid.close()
-
-    data_drizzle = get_for_compare_drizzle()
-    with open('drizzle.bin', 'wb') as fid:
-        fid.write(data_drizzle.tobytes())
-        fid.close()
+    #
+    # data_drizzle = get_for_compare_drizzle()
+    # with open('drizzle.bin', 'wb') as fid:
+    #     fid.write(data_drizzle.tobytes())
+    #     fid.close()
 
 
 def get_for_compare_drizzle(init_seed: float = None) -> np.array:
     wavelength = 0.15
     min_temp = -15.
     max_temp = 5.
-    num_iters = 100
+    num_iters = 1000
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_drizzle = SpheroidModel('drizzle', wavelength, 'compare', init_seed)
@@ -250,7 +266,7 @@ def get_for_compare_rain(init_seed: float = None) -> np.array:
     wavelength = 0.15
     min_temp = -5.
     max_temp = 5.
-    num_iters = 100
+    num_iters = 1
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('rain', wavelength, 'compare', init_seed)
@@ -266,7 +282,7 @@ def get_for_compare_wet_snow(init_seed: float = None) -> np.array:
     wavelength = 0.15
     min_temp = -15.
     max_temp = 5.
-    num_iters = 100
+    num_iters = 1000
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('wet_snow', wavelength, 'compare', init_seed)
@@ -282,7 +298,7 @@ def get_for_compare_dry_snow(init_seed: float = None) -> np.array:
     wavelength = 0.15
     min_temp = -15.
     max_temp = 0.
-    num_iters = 100
+    num_iters = 1
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('dry_snow', wavelength, 'compare', init_seed)
@@ -298,7 +314,7 @@ def get_for_compare_ice_crystals(init_seed: float = None) -> np.array:
     wavelength = 0.15
     min_temp = -15.
     max_temp = 0.
-    num_iters = 50
+    num_iters = 1000
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('ice_crystals', wavelength, 'compare', init_seed)
@@ -312,10 +328,11 @@ def get_for_compare_ice_crystals(init_seed: float = None) -> np.array:
 
 
 def main():
-    if not os.path.exists('/media/serj/Data/Git/repos/weather-radar-math/bin'):
-        os.mkdir('/media/serj/Data/Git/repos/weather-radar-math/bin')
+    path_to_data = 'E:/Git/weather-radar/weather-radar-math/bin' # '/media/serj/Data/Git/repos/weather-radar-math/bin'
+    if not os.path.exists(path_to_data):
+        os.mkdir(path_to_data)
 
-    os.chdir('/media/serj/Data/Git/repos/weather-radar-math/bin')
+    os.chdir(path_to_data)
 
     calculate_all()
     plot_all()

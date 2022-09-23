@@ -97,17 +97,17 @@ def get_rain_class(subclass_name: str):
     elif subclass_name == 'drizzle_compare':
         num_bins_distribution = 30
         min_diameter = 0.6
-        max_diameter = 7
+        max_diameter = 3
         angle_dispersion = 10
         min_mean_angle = 5
-        max_mean_angle = 5
+        max_mean_angle = 10
 
         def rain_tilt_model(mean_angle) -> Iterator[float]:
             return GaussRandomValue(mean_angle, angle_dispersion)
 
-        model_number_concentration = UniformRandomValue(1e3, 2.1e4)
-        model_shape = UniformRandomValue(-1, 4)
-        model_norm_diameter = UniformRandomValue(0.5, 1.4)
+        model_number_concentration = UniformRandomValue(1e2, 8e2)
+        model_shape = UniformRandomValue(-1, 1)
+        model_norm_diameter = UniformRandomValue(0.4, 1.6)
 
     elif subclass_name == 'rain_compare':
         num_bins_distribution = 30
@@ -122,7 +122,7 @@ def get_rain_class(subclass_name: str):
 
         model_number_concentration = UniformRandomValue(2e2, 1e4)
         model_shape = UniformRandomValue(-1, 4)
-        model_norm_diameter = UniformRandomValue(1.3, 2.7)
+        model_norm_diameter = UniformRandomValue(1.0, 2.8)
 
     else:
         exit(f'spheroid_info.get_rain_class: Unknown rain subclass name [ {subclass_name} ] received. Exiting.')
@@ -180,7 +180,7 @@ def get_dry_snow_class(subclass_name: str):
             return GaussRandomValue(mean_angle, angle_dispersion)
 
         def dry_snow_dimensions_model(equdiam: float):
-            return uniform(0.8, 1)
+            return uniform(0.8, 1.1)
 
         model_slope = UniformRandomValue(2.5, 8.2)
         model_intercept = UniformRandomValue(2380, 40000)
@@ -247,7 +247,7 @@ def get_wet_snow_class(subclass_name: str):
         def wet_snow_dimensions_model(equdiam: float):
             return uniform(0.6, 0.7)
 
-        model_slope = UniformRandomValue(1.8, 3.1)
+        model_slope = UniformRandomValue(2, 8.1)
         model_intercept = UniformRandomValue(1500, 4800)
         mixing_percent = UniformRandomValue(0.1, 0.3)
 
@@ -316,7 +316,7 @@ def get_ice_crystal_class(subclass_name: str):
 
     if subclass_name == 'ice_crystals_compare':
 
-        num_bins_distribution = 30
+        num_bins_distribution = 20
         min_diameter = 0.2
         max_diameter = 10.8
         angle_dispersion = 5
@@ -333,7 +333,7 @@ def get_ice_crystal_class(subclass_name: str):
                 return uniform(0.2, 0.9)
 
         model_slope = UniformRandomValue(1.1, 3.0)
-        model_intercept = UniformRandomValue(10., 120)
+        model_intercept = UniformRandomValue(60., 120)
 
     class IceCrystalsInfoFactory(SpheroidInfoFactory):
         def __init__(self, init_seed: float):
