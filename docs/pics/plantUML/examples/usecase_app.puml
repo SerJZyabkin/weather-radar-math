@@ -1,0 +1,35 @@
+@startuml
+title Варианты использования ИСПО МНРЛС-2015
+left to right direction
+
+actor "Пользователь" as User
+actor "Эксперт" as Expert
+actor "Технологическое ПО для \n проведения испытаний МН РЛС" as Rls
+Expert -left-|> User
+
+usecase "Просмотр содержимого \nфайла-компонента данных \n для формирования сценария" as ViewFile
+usecase "Запуск и прерывание процедуры имитации" as StartImitation
+usecase "Редактирование \nконфигурации сценария\nимитации" as EditScenario
+usecase "Извлечение результата моделирования" as ExtractData
+usecase "Получение \nдиагностической информации о \nсостоянии комплекса" as GetDiagnostics
+
+User -left-> ViewFile
+User --> ExtractData
+User --> StartImitation
+User --> EditScenario
+User --> GetDiagnostics
+
+Rls -up--> StartImitation
+Rls -up--> EditScenario
+Rls -up--> ExtractData
+Rls -up--> GetDiagnostics
+
+usecase "Добавление \nфайлов-компонента данных \n для формирования сценария" as AddFile
+usecase "Редактирование \nфайлов-компонента данных \n для формирования сценария" as EditFile
+
+Expert --> AddFile
+Expert --> EditFile
+
+Rls -up--> AddFile
+Rls -up--> EditFile
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+skinparam activityFontSize 17
+skinparam activityDiamondFontSize 17
+skinparam activityArrowFontSize 17
+start
+scale 2500 width
+:Scenario Info Extraction;
+
+:Unvariable ADWRS Config Files Preparation;
+:Weather Data Set Files Preparation;
+
+while (\n FOR cycle by accumulation period index \n)
+:Variable ADWRS Config Files Preparation;
+:Single Accumulation Period Calculation with ADWRS;
+:ADWRS Output File Extraction &  \nData Conversion To MBC Format ;
+:Simulated Signal Recording Into Memory  ;
+:  Model Time Advancing by Single Accumulation Period  \n (A/C Position and Movement, Scan Beam Direction, etc)  ;
+endwhile
+
+:Temporary Files Purging;
+
+stop
+@enduml
