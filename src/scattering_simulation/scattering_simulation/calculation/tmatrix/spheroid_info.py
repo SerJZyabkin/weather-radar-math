@@ -1,14 +1,16 @@
 import random
+
 import numpy as np
 from sys import exit
 from ..common_expressions import UniformRandomValue, GaussRandomValue
 from abc import ABC, abstractmethod
 from typing import Callable, Iterator
 from ..particle_properties.rain.drop_size import factory_exponential_distribution, \
-    factory_normalized_gamma_distribution
+    factory_normalized_gamma_distribution, factory_normalized_exponential_distribution
 from ..particle_properties.rain.drop_shape import get_gamma_rain
 from ..particle_properties.dielectric_permittivity.lossy_medium import get_ice_reflection_index, \
     get_water_reflection_index, get_water_dielectric_constant, get_ice_dielectric_constant, get_air_dielectric_constant
+from ..particle_properties.dielectric_permittivity.particular_mixtures import get_mixing_for_wet_snow
 from ..particle_properties.dielectric_permittivity.medium_mixture import get_mixing_ponder_vansandern
 from random import uniform
 
@@ -16,7 +18,6 @@ from random import uniform
 def generator_const(value):
     while True:
         yield value
-
 
 class SpheroidInfoFactory(ABC):
     def __init__(self, min_diameter: float, max_diameter: float, init_seed: float = None):
@@ -54,97 +55,39 @@ class SpheroidInfoFactory(ABC):
 def get_rain_class(subclass_name: str):
     # Основные классы
     if subclass_name == 'drizzle':
-        num_bins_distribution = 30
-        min_diameter = 0.6
-        max_diameter = 3
-        angle_dispersion = 2.5
-        min_mean_angle = 5
-        max_mean_angle = 10
-
-        def rain_dimension_model() -> float:
-            return uniform(0.99, 1.01)
-
-        def rain_tilt_model(mean_angle) -> Iterator[float]:
-            return GaussRandomValue(mean_angle, angle_dispersion)
-
-        model_number_concentration = UniformRandomValue(2e2, 1e3)
-        model_shape = UniformRandomValue(-1, 1)
-        model_norm_diameter = UniformRandomValue(0.4, 1.6)
-
-    elif subclass_name == 'light_rain':
-        num_bins_distribution = 30
+        num_bins_distribution = 20
         min_diameter = 0.6
         max_diameter = 7
-        angle_dispersion = 2.5
-        min_mean_angle = 9
-        max_mean_angle = 9
-
-        rain_dimension_model = get_gamma_rain
-
-        def rain_tilt_model(mean_angle) -> Iterator[float]:
-            return GaussRandomValue(mean_angle, angle_dispersion)
-
-        model_number_concentration = UniformRandomValue(2e2, 1e4)
+        model_number_concentration = UniformRandomValue(1e3, 2.1e4)
         model_shape = UniformRandomValue(-1, 4)
-        model_norm_diameter = UniformRandomValue(0.8, 1.4)
-
+        model_norm_diameter = UniformRandomValue(0.5, 1.4)
     elif subclass_name == 'medium_rain':
-        num_bins_distribution = 30
+        num_bins_distribution = 20
         min_diameter = 0.6
         max_diameter = 7
-        angle_dispersion = 2.5
-        min_mean_angle = 9
-        max_mean_angle = 9
-
-        rain_dimension_model = get_gamma_rain
-
-        def rain_tilt_model(mean_angle) -> Iterator[float]:
-            return GaussRandomValue(mean_angle, angle_dispersion)
-
-        model_number_concentration = UniformRandomValue(8e3, 1e4)
+        model_number_concentration = UniformRandomValue(1e3, 1e4)
         model_shape = UniformRandomValue(-1, 4)
-        model_norm_diameter = UniformRandomValue(1.3, 2.0)
-
+        model_norm_diameter = UniformRandomValue(1.4, 2)
     elif subclass_name == 'heavy_rain':
-        num_bins_distribution = 30
+        num_bins_distribution = 20
         min_diameter = 0.6
         max_diameter = 7
-        angle_dispersion = 2.5
-        min_mean_angle = 9
-        max_mean_angle = 9
-
-        rain_dimension_model = get_gamma_rain
-
-        def rain_tilt_model(mean_angle) -> Iterator[float]:
-            return GaussRandomValue(mean_angle, angle_dispersion)
-
-        model_number_concentration = UniformRandomValue(8e2, 5e3)
+        model_number_concentration = UniformRandomValue(2e3, 9e3)
         model_shape = UniformRandomValue(-1, 4)
-        model_norm_diameter = UniformRandomValue(1.8, 3.5)
-
+        model_norm_diameter = UniformRandomValue(1.8, 3.2)
     elif subclass_name == 'large_drops':
-        num_bins_distribution = 12
+        num_bins_distribution = 20
         min_diameter = 0.6
-        max_diameter = 8
-        angle_dispersion = 2.5
-        min_mean_angle = 9
-        max_mean_angle = 9
-
-        rain_dimension_model = get_gamma_rain
-
-        def rain_tilt_model(mean_angle) -> Iterator[float]:
-            return GaussRandomValue(mean_angle, angle_dispersion)
-
+        max_diameter = 7
         model_number_concentration = UniformRandomValue(15, 150)
         model_shape = UniformRandomValue(-0.94, 0.87)
-        model_norm_diameter = UniformRandomValue(2.7, 4.2)
+        model_norm_diameter = UniformRandomValue(1.3, 3.6)
 
     # Класс для рисования рисунков в пояснительную записку
     elif subclass_name == 'rain_fixed':
         num_bins_distribution = 20
         min_diameter = 0.5
         max_diameter = 7
-        rain_dimension_model = get_gamma_rain
         model_number_concentration = generator_const(1e3)
         model_shape = generator_const(-0.9)
         model_norm_diameter = generator_const(1)
@@ -158,8 +101,6 @@ def get_rain_class(subclass_name: str):
         angle_dispersion = 10
         min_mean_angle = 5
         max_mean_angle = 10
-
-        rain_dimension_model = get_gamma_rain
 
         def rain_tilt_model(mean_angle) -> Iterator[float]:
             return GaussRandomValue(mean_angle, angle_dispersion)
@@ -175,8 +116,6 @@ def get_rain_class(subclass_name: str):
         angle_dispersion = 2.5
         min_mean_angle = 9
         max_mean_angle = 9
-
-        rain_dimension_model = get_gamma_rain
 
         def rain_tilt_model(mean_angle) -> Iterator[float]:
             return GaussRandomValue(mean_angle, angle_dispersion)
@@ -200,7 +139,7 @@ def get_rain_class(subclass_name: str):
 
         @staticmethod
         def get_dimensions_model() -> Callable[[float], float]:
-            return rain_dimension_model
+            return get_gamma_rain
 
         def get_tilt_model(self) -> Iterator[float]:
             mean_angle = uniform(min_mean_angle, max_mean_angle)
@@ -217,16 +156,6 @@ def get_dry_snow_class(subclass_name: str):
         num_bins_distribution = 14
         min_diameter = 1
         max_diameter = 15
-        angle_dispersion = 5
-        min_mean_angle = 5
-        max_mean_angle = 5
-
-        def dry_snow_tilt_model(mean_angle) -> Iterator[float]:
-            return GaussRandomValue(mean_angle, angle_dispersion)
-
-        def dry_snow_dimensions_model(equdiam: float):
-            return uniform(0.8, 1.05)
-
         model_slope = UniformRandomValue(2.5, 8.2)
         model_intercept = UniformRandomValue(2380, 42000)
         mixing_percent = generator_const(0.2)
@@ -235,6 +164,13 @@ def get_dry_snow_class(subclass_name: str):
         num_bins_distribution = 14
         min_diameter = 1
         max_diameter = 15
+
+        def dry_snow_tilt_model(mean_angle) -> Iterator[float]:
+            generator_const(0.)
+
+        def dry_snow_dimensions_model(equdiam: float):
+            return 0.8
+
         model_slope = generator_const(2.2)
         model_intercept = generator_const(4.2e4)
         mixing_percent = generator_const(0.2)
@@ -287,20 +223,20 @@ def get_dry_snow_class(subclass_name: str):
 
 def get_wet_snow_class(subclass_name: str):
     if subclass_name == 'wet_snow':
-        num_bins_distribution = 20
+        num_bins_distribution = 14
         min_diameter = 1
         max_diameter = 15
         angle_dispersion = 5
         min_mean_angle = 10
-        max_mean_angle = 20
+        max_mean_angle = 80
 
         def wet_snow_tilt_model(mean_angle) -> Iterator[float]:
             return GaussRandomValue(mean_angle, angle_dispersion)
 
         def wet_snow_dimensions_model(equdiam: float):
-            return uniform(0.6, 0.7)
+            return uniform(0.7, 0.9)
 
-        model_slope = UniformRandomValue(2, 8.1)
+        model_slope = UniformRandomValue(1.8, 3.1)
         model_intercept = UniformRandomValue(1500, 4800)
         mixing_percent = generator_const(0.2)
 
@@ -308,7 +244,7 @@ def get_wet_snow_class(subclass_name: str):
         num_bins_distribution = 20
         min_diameter = 1
         max_diameter = 15
-        angle_dispersion = 6   # 5 - 18 - 32
+        angle_dispersion = 10   # 5 - 18 - 32
         min_mean_angle = 13
         max_mean_angle = 29
 
@@ -370,24 +306,20 @@ def get_wet_snow_class(subclass_name: str):
 def get_ice_crystal_class(subclass_name: str):
 
     if subclass_name == 'ice_crystals':
-        num_bins_distribution = 8
+        num_bins_distribution = 14
         min_diameter = 0.2
         max_diameter = 4.8
-        angle_dispersion = 5
-        min_mean_angle = 15
-        max_mean_angle = 75
+        min_mean_angle = 10
+        max_mean_angle = 80
 
         def ice_crystals_tilt_model(mean_angle) -> Iterator[float]:
             return GaussRandomValue(mean_angle, angle_dispersion)
 
         def ice_crystals_dimensions_model(equdiam: float) -> float:
-            if equdiam < 0.0015:
-                return uniform(0.6, 1.8)
-            else:
-                return uniform(0.3, 2.4)
+            return uniform(0.7, 0.9)
 
         model_slope = UniformRandomValue(1.1, 3.0)
-        model_intercept = UniformRandomValue(30., 81)
+        model_intercept = UniformRandomValue(1., 41)
 
     if subclass_name == 'ice_crystals_compare':
 
@@ -439,7 +371,6 @@ def get_ice_crystal_class(subclass_name: str):
 
 def get_spheroid_info(class_type: str, init_seed: float) -> SpheroidInfoFactory:
     factories = {'drizzle': get_rain_class('drizzle'),
-                 'light_rain': get_rain_class('light_rain'),
                  'medium_rain': get_rain_class('medium_rain'),
                  'heavy_rain': get_rain_class('heavy_rain'),
                  'large_drops': get_rain_class('large_drops'),
@@ -469,3 +400,5 @@ def get_spheroid_comparation(class_type: str, init_seed: float) -> SpheroidInfoF
                  }
     if class_type in factories.keys():
         return factories[class_type](init_seed)
+
+

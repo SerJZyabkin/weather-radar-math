@@ -30,7 +30,7 @@ class SingleSpheroidModel:
         self.init_seed = init_seed
 
         # Получение модели характеристик сфероида, избрание фабрики для выбранного класса
-        if class_type in ('drizzle', 'light_rain', 'medium_rain', 'heavy_rain', 'large_drops', 'dry_snow',
+        if class_type in ('drizzle', 'medium_rain', 'heavy_rain', 'large_drops', 'dry_snow',
                           'wet_snow', 'ice_crystals') and mode == 'general':
             model_spheroid = get_spheroid_info(class_type, init_seed)
         elif class_type in ('rain', 'dry_snow', 'wet_snow') and mode == 'fixed':
@@ -62,7 +62,7 @@ class SpheroidModel:
         self.init_seed = init_seed
 
         # Получение модели характеристик сфероида, избрание фабрики для выбранного класса
-        if class_type in ('drizzle', 'light_rain', 'medium_rain', 'heavy_rain', 'large_drops', 'dry_snow',
+        if class_type in ('drizzle', 'medium_rain', 'heavy_rain', 'large_drops', 'dry_snow',
                           'wet_snow', 'ice_crystals') and mode == 'general':
             self.model_info = get_spheroid_info(class_type, init_seed)
         elif class_type in ('rain', 'dry_snow', 'wet_snow') and mode == 'fixed':
@@ -89,8 +89,6 @@ class SpheroidModel:
         for step in range(num_bins_distribution):
             out_data[1, step] = int(np.round(quad(distribution_model, diameter_limits[step],
                                                   diameter_limits[step + 1])[0]))
-
-            out_data[0, step] += (0.4 - 0.8 * random()) * delta_diameters / 1000
         return out_data
 
     def get_products(self, _temperature, falling_angle: float = 0.):
@@ -131,7 +129,6 @@ class SpheroidModel:
 
         return Zh, Zdr, LDR, ro_hv, Kdp
 
-
 def plot_all():
     with open('ice_crystals.bin', 'rb') as fid:
         raw_bytes = fid.read()
@@ -169,337 +166,91 @@ def plot_all():
         data_drizzle = data_drizzle.reshape([int(len(data_drizzle) / 5), 5])
         fid.close()
 
-    fig, ax = plt.subplots(4, 1)
-    ax[0].plot(data_ic[:, 0][:100], data_ic[:, 1][:100], '+', color='lightblue')
-    ax[1].plot(data_ic[:, 0][:100], data_ic[:, 2][:100], '+', color='lightblue')
+    fig, ax = plt.subplots(2, 1)
+    ax[0].plot(data_ic[:, 0], data_ic[:, 1], '+', color='lightblue')
+    ax[1].plot(data_ic[:, 0], data_ic[:, 2], '+', color='lightblue')
 
-    ax[0].plot(data_ds[:, 0][:100], data_ds[:, 1][:100], '*', color='green')
-    ax[1].plot(data_ds[:, 0][:100], data_ds[:, 2][:100], '*', color='green')
+    ax[0].plot(data_ds[:, 0], data_ds[:, 1], '*', color='green')
+    ax[1].plot(data_ds[:, 0], data_ds[:, 2], '*', color='green')
 
-    ax[0].plot(data_ws[:, 0][:100], data_ws[:, 1][:100], '+', color='darkblue')
-    ax[1].plot(data_ws[:, 0][:100], data_ws[:, 2][:100], '+', color='darkblue')
+    ax[0].plot(data_ws[:, 0], data_ws[:, 1], '+', color='darkblue')
+    ax[1].plot(data_ws[:, 0], data_ws[:, 2], '+', color='darkblue')
 
-    ax[0].plot(data_r[:, 0][:100], data_r[:, 1][:100], 'o', color='red')
-    ax[1].plot(data_r[:, 0][:100], data_r[:, 2][:100], 'o', color='red')
+    ax[0].plot(data_r[:, 0], data_r[:, 1], 'o', color='red')
+    ax[1].plot(data_r[:, 0], data_r[:, 2], 'o', color='red')
 
-    ax[0].plot(data_drizzle[:, 0][:100], data_drizzle[:, 1][:100], 'o', color='yellow')
-    ax[1].plot(data_drizzle[:, 0][:100], data_drizzle[:, 2][:100], 'o', color='yellow')
+    ax[0].plot(data_drizzle[:, 0], data_drizzle[:, 1], 'o', color='yellow')
+    ax[1].plot(data_drizzle[:, 0], data_drizzle[:, 2], 'o', color='yellow')
 
 
-    # ax[0].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
-    # ax[1].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
-    ax[0].set_xlim([-10, 60])
+    ax[0].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
+    ax[1].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
+    ax[0].set_xlim([-70, 70])
     ax[0].set_ylim([-1, 5])
-    ax[0].set_ylabel('Zdr, dB')
     ax[0].grid(True)
-    ax[1].set_xlim([-10, 60])
+    ax[1].set_xlim([-10, 70])
     ax[1].set_ylim([-50, -10])
-    ax[1].set_ylabel('LDR, dB')
-    ax[3].set_xlabel('Zh, dBZ')
     ax[1].grid(True)
-    # plt.show()
+    plt.show()
 
-    # fig, ax = plt.subplots(2, 1)
-    ax[2].plot(data_ic[:, 0][:100], data_ic[:, 3][:100], '+', color='lightblue')
-    ax[3].plot(data_ic[:, 0][:100], data_ic[:, 4][:100], '+', color='lightblue')
-    ax[2].plot(data_ds[:, 0][:100], data_ds[:, 3][:100], '*', color='green')
-    ax[3].plot(data_ds[:, 0][:100], data_ds[:, 4][:100], '*', color='green')
+    fig, ax = plt.subplots(2, 1)
+    ax[0].plot(data_ic[:, 0], data_ic[:, 3], '+', color='lightblue')
+    ax[1].plot(data_ic[:, 0], data_ic[:, 4], '+', color='lightblue')
+    ax[0].plot(data_ds[:, 0], data_ds[:, 3], '*', color='green')
+    ax[1].plot(data_ds[:, 0], data_ds[:, 4], '*', color='green')
 
-    ax[2].plot(data_ws[:, 0][:100], data_ws[:, 3][:100], '+', color='darkblue')
-    ax[3].plot(data_ws[:, 0][:100], data_ws[:, 4][:100], '+', color='darkblue')
+    ax[0].plot(data_ws[:, 0], data_ws[:, 3], '+', color='darkblue')
+    ax[1].plot(data_ws[:, 0], data_ws[:, 4], '+', color='darkblue')
 
-    ax[2].plot(data_r[:, 0][:100], data_r[:, 3][:100], 'o', color='red')
-    ax[3].plot(data_r[:, 0][:100], data_r[:, 4][:100], 'o', color='red')
+    ax[0].plot(data_r[:, 0], data_r[:, 3], 'o', color='red')
+    ax[1].plot(data_r[:, 0], data_r[:, 4], 'o', color='red')
 
-    ax[2].plot(data_drizzle[:, 0][:100], data_drizzle[:, 3][:100], 'o', color='yellow')
-    ax[3].plot(data_drizzle[:, 0][:100], data_drizzle[:, 4][:100], 'o', color='yellow')
+    ax[0].plot(data_drizzle[:, 0], data_drizzle[:, 3], 'o', color='yellow')
+    ax[1].plot(data_drizzle[:, 0], data_drizzle[:, 4], 'o', color='yellow')
 
-    # ax[2].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
-    ax[3].legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
-    ax[2].set_xlim([-10, 60])
-    ax[2].set_ylim([0.975, 1.005])
-    ax[2].grid(True)
-    ax[3].set_xlim([-10, 60])
-    ax[3].set_ylim([0, 15])
-    ax[3].grid(True)
 
-    ax[2].set_ylabel('ρhv')
-    ax[3].set_ylabel('Kdp, °')
+    plt.legend(['Кристаллы льда', 'Сухой снег', 'Мокрый снег', 'Дождь', 'Морось'])
+    ax[0].set_xlim([-10, 70])
+    ax[0].set_ylim([0.975, 1.005])
+    ax[0].grid(True)
+    ax[1].set_xlim([-10, 70])
+    ax[1].set_ylim([0, 15])
+    ax[1].grid(True)
     plt.show()
 
 
 def calculate_all():
     data_ic = get_for_compare_ice_crystals()
-    with open('ice_crystals.bin', 'ab') as fid:
+    with open('ice_crystals.bin', 'wb') as fid:
         fid.write(data_ic.tobytes())
-        fid.close()
-
-    data_ws = get_for_compare_wet_snow()
-    with open('wet_snow.bin', 'ab') as fid:
-        fid.write(data_ws.tobytes())
-        fid.close()
-
-    data_rain = get_for_compare_rain()
-    with open('rain.bin', 'ab') as fid:
-        fid.write(data_rain.tobytes())
-        fid.close()
-
-    data_ds = get_for_compare_dry_snow()
-    with open('dry_snow.bin', 'ab') as fid:
-        fid.write(data_ds.tobytes())
-        fid.close()
-
-    data_drizzle = get_for_compare_drizzle()
-    with open('drizzle.bin', 'ab') as fid:
-        fid.write(data_drizzle.tobytes())
-        fid.close()
-
-
-def calculate_mf():
-    data_dzl = get_for_membership_drizzle()
-    with open('drizzle_mf.bin', 'wb') as fid:
-        fid.write(data_dzl.tobytes())
-        fid.close()
-
-    data_lr = get_for_membership_light_rain()
-    with open('light_rain.bin', 'wb') as fid:
-        fid.write(data_lr.tobytes())
-        fid.close()
-
-    data_mr = get_for_membership_medium_rain()
-    with open('medium_rain.bin', 'wb') as fid:
-        fid.write(data_mr.tobytes())
-        fid.close()
-
-    data_hr = get_for_membership_heavy_rain()
-    with open('heavy_rain.bin', 'wb') as fid:
-        fid.write(data_hr.tobytes())
-        fid.close()
-
-    data_ld = get_for_membership_large_drops()
-    with open('large_drops.bin', 'wb') as fid:
-        fid.write(data_ld.tobytes())
-        fid.close()
-
-    data_ws = get_for_membership_wet_snow()
-    with open('wet_snow.bin', 'ab') as fid:
-        fid.write(data_ws.tobytes())
         fid.close()
     #
-    data_ds = get_for_membership_dry_snow()
-    with open('dry_snow.bin', 'ab') as fid:
-        fid.write(data_ds.tobytes())
-        fid.close()
-
-    data_ic = get_for_membership_ice_crystals()
-    with open('ice_crystals.bin', 'ab') as fid:
-        fid.write(data_ic.tobytes())
-        fid.close()
-
-def calculate_classifier():
-    num_iterations = 501
-
-    accumulated_points = np.zeros([6, 1])
-    accumulated_points[0] = 234
-    accumulated_points[1] = 340
-    accumulated_points[2] = 500
-    accumulated_points[3] = 500
-    accumulated_points[4] = 500
-    accumulated_points[5] = 343
-
-    num_finished = 0
-
-    gen_ice = get_generator_ice(5, 1000)
-    gen_water = get_generator_water(5, 1000)
-
-    with open('cw_25.bin', 'ab') as fid_w25, open('ic_25.bin', 'ab') as fid_i25, \
-        open('cw_15.bin', 'ab') as fid_w15, open('ic_15.bin', 'ab') as fid_i15, \
-        open('cw_5.bin', 'ab') as fid_w5, open('ic_5.bin', 'ab') as fid_i5:
-        while num_finished < 6:
-            if sum(accumulated_points[0:3]) < num_iterations * 3:
-                values_cw = next(gen_water)
-            if sum(accumulated_points[3:6]) < num_iterations * 3:
-                values_ic = next(gen_ice)
-            if accumulated_points[0] < num_iterations:
-                if 5 <= values_cw[0] < 15:
-                    fid_w5.write(values_cw.tobytes())
-                    accumulated_points[0] += 1
-                    if accumulated_points[0] == num_iterations:
-                        num_finished += 1
-                        fid_w5.close()
-
-            if accumulated_points[1] < num_iterations:
-                if 15 <= values_cw[0] < 25:
-                    fid_w15.write(values_cw.tobytes())
-                    accumulated_points[1] += 1
-                    if accumulated_points[1] == num_iterations:
-                        num_finished += 1
-                        fid_w15.close()
-
-            if accumulated_points[2] < num_iterations:
-                if 25 <= values_cw[0]:
-                    fid_w25.write(values_cw.tobytes())
-                    accumulated_points[2] += 1
-                    if accumulated_points[2] == num_iterations:
-                        num_finished += 1
-                        fid_w25.close()
-
-            if accumulated_points[3] < num_iterations:
-                if 5 <= values_ic[0] < 15:
-                    fid_i5.write(values_ic.tobytes())
-                    accumulated_points[3] += 1
-                    if accumulated_points[3] == num_iterations:
-                        num_finished += 1
-                        fid_i5.close()
-
-            if accumulated_points[4] < num_iterations:
-                if 15 <= values_ic[0] < 25:
-                    fid_i15.write(values_ic.tobytes())
-                    accumulated_points[4] += 1
-                    if accumulated_points[4] == num_iterations:
-                        num_finished += 1
-                        fid_i15.close()
-
-            if accumulated_points[5] < num_iterations:
-                if 25 <= values_ic[0]:
-                    fid_i25.write(values_ic.tobytes())
-                    accumulated_points[5] += 1
-                    if accumulated_points[5] == num_iterations:
-                        num_finished += 1
-                        fid_i25.close()
-
-            print(*accumulated_points, num_finished)
-
-def calculate_detect():
-    num_iterations = 900
-
-    with open('cooled_water.bin', 'ab') as fid_w,  open('crystals.bin', 'ab') as fid_i:
-        gen_ice = get_generator_ice(5, 1000)
-        gen_water = get_generator_water(5, 1000)
-        for step in range(num_iterations):
-            fid_i.write(next(gen_ice).tobytes())
-            fid_w.write(next(gen_water).tobytes())
-            print(f'Calculated {step} reports.')
-        fid_w.close()
-        fid_i.close()
-
-
-
-def plot_mf():
-    num_points_to_plot = 100
-
-    with open('drizzle_mf.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_dzl = np.frombuffer(raw_bytes, dtype=np.float)
-        data_dzl = np.array(data_dzl.reshape([int(len(data_dzl) / 5), 5]))
-        fid.close()
-
-    with open('light_rain.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_lr = np.frombuffer(raw_bytes, dtype=np.float)
-        data_lr = np.array(data_lr.reshape([int(len(data_lr) / 5), 5]))
-        fid.close()
-
-    with open('medium_rain.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_mr = np.frombuffer(raw_bytes, dtype=np.float)
-        data_mr = np.array(data_mr.reshape([int(len(data_mr) / 5), 5]))
-        fid.close()
-
-    with open('heavy_rain.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_hr = np.frombuffer(raw_bytes, dtype=np.float)
-        data_hr = np.array(data_hr.reshape([int(len(data_hr) / 5), 5]))
-        fid.close()
-
-    with open('large_drops.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_ld = np.frombuffer(raw_bytes, dtype=np.float)
-        data_ld = np.array(data_ld.reshape([int(len(data_ld) / 5), 5]))
-        fid.close()
-
-    with open('wet_snow.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_ws = np.frombuffer(raw_bytes, dtype=np.float)
-        data_ws = np.array(data_ws.reshape([int(len(data_ws) / 5), 5]))
-        fid.close()
-
-    with open('dry_snow.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_ds = np.frombuffer(raw_bytes, dtype=np.float)
-        data_ds = np.array(data_ds.reshape([int(len(data_ds) / 5), 5]))
-        fid.close()
-
-    with open('ice_crystals.bin', 'rb') as fid:
-        raw_bytes = fid.read()
-        data_ic = np.frombuffer(raw_bytes, dtype=np.float)
-        data_ic = np.array(data_ic.reshape([int(len(data_ic) / 5), 5]))
-        fid.close()
-
-    fig, ax = plt.subplots(3, 1)
-    ax[0].plot(data_dzl[0:num_points_to_plot, 0], data_dzl[0:num_points_to_plot, 1], '+', color='lightblue')
-    ax[1].plot(data_dzl[0:num_points_to_plot, 0], data_dzl[0:num_points_to_plot, 2], '+', color='lightblue')
-    ax[2].plot(data_dzl[0:num_points_to_plot, 0], data_dzl[0:num_points_to_plot, 4], '+', color='lightblue')
-
-    ax[0].plot(data_lr[0:num_points_to_plot, 0], data_lr[0:num_points_to_plot, 1], '*', color='green')
-    ax[1].plot(data_lr[0:num_points_to_plot, 0], data_lr[0:num_points_to_plot, 2], '*', color='green')
-    ax[2].plot(data_lr[0:num_points_to_plot, 0], data_lr[0:num_points_to_plot, 4], '*', color='green')
-
-    ax[0].plot(data_mr[0:num_points_to_plot, 0], data_mr[0:num_points_to_plot, 1], '+', color='darkblue')
-    ax[1].plot(data_mr[0:num_points_to_plot, 0], data_mr[0:num_points_to_plot, 2], '+', color='darkblue')
-    ax[2].plot(data_mr[0:num_points_to_plot, 0], data_mr[0:num_points_to_plot, 4], '+', color='darkblue')
-
-    ax[0].plot(data_hr[0:num_points_to_plot, 0], data_hr[0:num_points_to_plot, 1], 'o', color='red')
-    ax[1].plot(data_hr[0:num_points_to_plot, 0], data_hr[0:num_points_to_plot, 2], 'o', color='red')
-    ax[2].plot(data_hr[0:num_points_to_plot, 0], data_hr[0:num_points_to_plot, 4], 'o', color='red')
-
-    ax[0].plot(data_ld[0:num_points_to_plot, 0], data_ld[0:num_points_to_plot, 1], 'o', color='yellow')
-    ax[1].plot(data_ld[0:num_points_to_plot, 0], data_ld[0:num_points_to_plot, 2], 'o', color='yellow')
-    ax[2].plot(data_ld[0:num_points_to_plot, 0], data_ld[0:num_points_to_plot, 4], 'o', color='yellow')
-
-    ax[0].plot(data_ws[0:num_points_to_plot, 0], data_ws[0:num_points_to_plot, 1], 'o', color='orange')
-    ax[1].plot(data_ws[0:num_points_to_plot, 0], data_ws[0:num_points_to_plot, 2], 'o', color='orange')
-    ax[2].plot(data_ws[0:num_points_to_plot, 0], data_ws[0:num_points_to_plot, 4], 'o', color='orange')
-
-    ax[0].plot(data_ds[0:num_points_to_plot, 0], data_ds[0:num_points_to_plot, 1], '*', color='magenta')
-    ax[1].plot(data_ds[0:num_points_to_plot, 0], data_ds[0:num_points_to_plot, 2], '*', color='magenta')
-    ax[2].plot(data_ds[0:num_points_to_plot, 0], data_ds[0:num_points_to_plot, 4], '*', color='magenta')
-
-    ax[0].plot(data_ic[0:num_points_to_plot, 0], data_ic[0:num_points_to_plot, 1], '+', color='brown')
-    ax[1].plot(data_ic[0:num_points_to_plot, 0], data_ic[0:num_points_to_plot, 2], '+', color='brown')
-    ax[2].plot(data_ic[0:num_points_to_plot, 0], data_ic[0:num_points_to_plot, 4], '+', color='brown')
-
-
-
-    legends_list = ['Морось', 'Слабый дождь', 'Умеренный дождь', 'Ливневый дождь', 'Большие капли',
-                    'Мокрый снег', 'Сухой снег', 'Ориентированные кристаллы льда']
-    # ax[0].legend(legends_list)
-    # ax[1].legend(legends_list)
-    ax[2].legend(legends_list, loc='upper left', ncol=1)
-    ax[0].set_xlim([-10, 70])
-    ax[0].set_ylim([-2, 4])
-    ax[0].grid(True)
-    ax[1].set_xlim([-10, 70])
-    ax[1].set_ylim([-70, -10])
-    ax[1].grid(True)
-    ax[2].set_xlim([-10, 70])
-    ax[2].set_ylim([-3, 50])
-    ax[2].grid(True)
-
-    ax[0].set_ylabel('Zdr, dB')
-    ax[2].set_xlabel('Zh, dBZ')
-    ax[1].set_ylabel('LDR, dB')
-    ax[2].set_ylabel('Kdp, °')
-
-    plt.show()
-
+    # data_ws = get_for_compare_wet_snow()
+    # with open('wet_snow.bin', 'wb') as fid:
+    #     fid.write(data_ws.tobytes())
+    #     fid.close()
+    #
+    # data_rain = get_for_compare_rain()
+    # with open('rain.bin', 'wb') as fid:
+    #     fid.write(data_rain.tobytes())
+    #     fid.close()
+    #
+    # data_ds = get_for_compare_dry_snow()
+    # with open('dry_snow.bin', 'wb') as fid:
+    #     fid.write(data_ds.tobytes())
+    #     fid.close()
+    #
+    # data_drizzle = get_for_compare_drizzle()
+    # with open('drizzle.bin', 'wb') as fid:
+    #     fid.write(data_drizzle.tobytes())
+    #     fid.close()
 
 
 def get_for_compare_drizzle(init_seed: float = None) -> np.array:
-    wavelength = 0.11
+    wavelength = 0.15
     min_temp = -15.
     max_temp = 5.
-    num_iters = 900
+    num_iters = 1000
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_drizzle = SpheroidModel('drizzle', wavelength, 'compare', init_seed)
@@ -512,10 +263,10 @@ def get_for_compare_drizzle(init_seed: float = None) -> np.array:
 
 
 def get_for_compare_rain(init_seed: float = None) -> np.array:
-    wavelength = 0.11
+    wavelength = 0.15
     min_temp = -5.
     max_temp = 5.
-    num_iters = 900
+    num_iters = 1
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('rain', wavelength, 'compare', init_seed)
@@ -528,10 +279,10 @@ def get_for_compare_rain(init_seed: float = None) -> np.array:
 
 
 def get_for_compare_wet_snow(init_seed: float = None) -> np.array:
-    wavelength = 0.11
+    wavelength = 0.15
     min_temp = -15.
     max_temp = 5.
-    num_iters = 900
+    num_iters = 1000
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('wet_snow', wavelength, 'compare', init_seed)
@@ -544,10 +295,10 @@ def get_for_compare_wet_snow(init_seed: float = None) -> np.array:
 
 
 def get_for_compare_dry_snow(init_seed: float = None) -> np.array:
-    wavelength = 0.11
+    wavelength = 0.15
     min_temp = -15.
     max_temp = 0.
-    num_iters = 900
+    num_iters = 1
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('dry_snow', wavelength, 'compare', init_seed)
@@ -560,10 +311,10 @@ def get_for_compare_dry_snow(init_seed: float = None) -> np.array:
 
 
 def get_for_compare_ice_crystals(init_seed: float = None) -> np.array:
-    wavelength = 0.11
+    wavelength = 0.15
     min_temp = -15.
     max_temp = 0.
-    num_iters = 900
+    num_iters = 1000
 
     t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
     model_rain = SpheroidModel('ice_crystals', wavelength, 'compare', init_seed)
@@ -575,198 +326,16 @@ def get_for_compare_ice_crystals(init_seed: float = None) -> np.array:
     return out_data
 
 
-def get_for_membership_drizzle(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -15.
-    max_temp = 0.
-    num_iters = 1000
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_drizzle = SpheroidModel('drizzle', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_drizzle.get_products(next(t_gen), 20 - 10 * random()))
-        print('drz', step)
-    out_data = np.array(out_data)
-    return out_data
-
-
-def get_for_membership_light_rain(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -5.
-    max_temp = 5.
-    num_iters = 1000
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('light_rain', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 14 - 6 * random()))
-        print('lr', step)
-    out_data = np.array(out_data)
-    return out_data
-
-def get_for_membership_medium_rain(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -5.
-    max_temp = 5.
-    num_iters = 1000
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('medium_rain', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 14 - 6 * random()))
-        print('mr', step)
-    out_data = np.array(out_data)
-    return out_data
-
-def get_for_membership_heavy_rain(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -5.
-    max_temp = 5.
-    num_iters = 1000
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('heavy_rain', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 14 - 6 * random()))
-        print('r', step)
-    out_data = np.array(out_data)
-    return out_data
-
-def get_for_membership_large_drops(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -5.
-    max_temp = 5.
-    num_iters = 1000
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('large_drops', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 10 - 6 * random()))
-        print('ld', step)
-    out_data = np.array(out_data)
-    return out_data
-
-
-def get_for_membership_wet_snow(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -15.
-    max_temp = 5.
-    num_iters = 900
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('wet_snow', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 14 - 6 * random()))
-        print('ws', step)
-    out_data = np.array(out_data)
-    return out_data
-
-
-def get_for_membership_dry_snow(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -15.
-    max_temp = 0.
-    num_iters = 900
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('dry_snow', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 14 - 6 * random()))
-        print('ds', step)
-    out_data = np.array(out_data)
-    return out_data
-
-
-def get_for_membership_ice_crystals(init_seed: float = None) -> np.array:
-    wavelength = 0.0325
-    min_temp = -15.
-    max_temp = 0.
-    num_iters = 900
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    model_rain = SpheroidModel('ice_crystals', wavelength, 'general', init_seed)
-    out_data = []
-    for step in range(num_iters):
-        out_data.append(model_rain.get_products(next(t_gen), 14 - 6 * random()))
-        print('ic', step)
-    out_data = np.array(out_data)
-    return out_data
-
-
-def get_generator_ice(min_dbz, max_dbz, init_seed: float = None):
-    wavelength = 0.0325
-    min_temp = -15.
-    max_temp = 0.
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    class_gen = UniformRandomValue(0., 1.999999999999999999, init_seed)
-    models = [SpheroidModel('ice_crystals', wavelength, 'general', init_seed),
-              SpheroidModel('dry_snow', wavelength, 'general', init_seed)]
-
-    def generator_ice():
-        while True:
-            class_out = int(next(class_gen))
-            while True:
-                Zh, Zdr, LDR, ro_hv, Kdp = models[class_out].get_products(next(t_gen), 14 - 6 * random())
-                if min_dbz <= Zh <= max_dbz:
-                    break
-            yield np.array([Zh, Zdr, LDR, Kdp], dtype=np.float64)
-
-    return generator_ice()
-
-def get_generator_water(min_dbz, max_dbz, init_seed: float = None):
-
-    wavelength = 0.0325
-    min_temp = -15.
-    max_temp = 0.
-
-    t_gen = UniformRandomValue(min_temp, max_temp, init_seed)
-    class_gen = UniformRandomValue(0., 5.999999999999999999, init_seed)
-    models = [SpheroidModel('drizzle', wavelength, 'general', init_seed),
-              SpheroidModel('light_rain', wavelength, 'general', init_seed),
-              SpheroidModel('medium_rain', wavelength, 'general', init_seed),
-              SpheroidModel('heavy_rain', wavelength, 'general', init_seed),
-              SpheroidModel('wet_snow', wavelength, 'general', init_seed),
-              SpheroidModel('large_drops', wavelength, 'general', init_seed)]
-
-    fa = [(20, 10), (14, 6),  (14, 6) , (14, 6), (14, 6), (10, 6)]
-
-    def generator_water():
-        while True:
-            class_out = int(next(class_gen))
-            while True:
-                Zh, Zdr, LDR, ro_hv, Kdp = models[class_out].get_products(next(t_gen), fa[class_out][0] - fa[class_out][1] * random())
-                if min_dbz <= Zh <= max_dbz:
-                    break
-            # print('returning water', Zh, Zdr)
-            yield np.array([Zh, Zdr, LDR, Kdp], dtype=np.float64)
-
-    return generator_water()
 
 def main():
-   # path_to_data = 'E:/Git/weather-radar/weather-radar-math/bin'
-    path_to_data = '/media/serj/Data/Git/repos/weather-radar-math/bin_classify'
-
-
-    # path_to_data = '/media/serj/Data/Git/repos/weather-radar-math/bin_final_2000'
+    path_to_data = 'E:/Git/weather-radar/weather-radar-math/bin' # '/media/serj/Data/Git/repos/weather-radar-math/bin'
     if not os.path.exists(path_to_data):
         os.mkdir(path_to_data)
 
     os.chdir(path_to_data)
 
-    # calculate_all()
-    # calculate_mf()
-    # calculate_detect()
-    calculate_classifier()
-    # plot_all()
-    # plot_mf()
+    calculate_all()
+    plot_all()
     quit()
     # xxx = [0.0325, 0.0075, 2.533353951788893 + 0.05540354805478787j, 0.7637107722162353]
     #

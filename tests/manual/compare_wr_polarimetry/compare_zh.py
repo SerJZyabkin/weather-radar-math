@@ -4,7 +4,7 @@
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from scattering_simulation.calculation.tmatrix.spheroid import SingleSpheroidModel, get_spheroid_info
+from scattering_simulation.calculation.tmatrix.spheroid import SingleSpheroidModel, get_fixed_spheroid_info
 
 
 def rain_reflecitivity(_temp: float, _wavelengths: list, _equdiameters: list):
@@ -13,8 +13,8 @@ def rain_reflecitivity(_temp: float, _wavelengths: list, _equdiameters: list):
     fig, axes = plt.subplots(1, len(_wavelengths))
     lines_style = ['k-', 'k:', 'k-.', 'k--']
     for wavelength_id in range(len(_wavelengths)):
-        model = SingleSpheroidModel('rain_fixed', _wavelengths[wavelength_id], 0.01)
-        diel_epsi = get_spheroid_info('rain_fixed', 0.01).get_permittivity_model()(_wavelengths[wavelength_id], _temp)
+        model = SingleSpheroidModel('rain', _wavelengths[wavelength_id], 'fixed', 0.01)
+        diel_epsi = get_fixed_spheroid_info('rain', 0.01).get_permittivity_model()(_wavelengths[wavelength_id], _temp)
         K2 = np.square(np.abs((diel_epsi * diel_epsi - 1) / (diel_epsi * diel_epsi + 2)))
         legends_list = []
         for d_eq, line_style in zip(_equdiameters, lines_style):
@@ -57,10 +57,10 @@ def snow_reflectivity(_temp: float, _wavelength: float, _equdiameters: list):
     fig, axes = plt.subplots(1, 1)
     lines_style = ['-', ':', '-.', '--', '-', ':', 'densely dashed']
 
-    model_ws = SingleSpheroidModel('wet_snow_fixed', _wavelength, 0.01)
-    model_ds = SingleSpheroidModel('dry_snow_fixed', _wavelength, 0.01)
-    diel_epsi_ws = get_spheroid_info('wet_snow_fixed', 0.01).get_permittivity_model()(_wavelength, _temp)
-    diel_epsi_ds = get_spheroid_info('dry_snow_fixed', 0.01).get_permittivity_model()(_wavelength, _temp)
+    model_ws = SingleSpheroidModel('wet_snow', _wavelength, 'fixed', 0.01)
+    model_ds = SingleSpheroidModel('dry_snow', _wavelength, 'fixed', 0.01)
+    diel_epsi_ws = get_fixed_spheroid_info('wet_snow', 0.01).get_permittivity_model()(_wavelength, _temp)
+    diel_epsi_ds = get_fixed_spheroid_info('dry_snow', 0.01).get_permittivity_model()(_wavelength, _temp)
 
     K2_ws = 0.92 #np.square(np.abs((diel_epsi_ws * diel_epsi_ws - 1) / (diel_epsi_ws * diel_epsi_ws + 2)))
     K2_ds = 0.92 #np.square(np.abs((diel_epsi_ds * diel_epsi_ds - 1) / (diel_epsi_ds * diel_epsi_ds + 2)))
@@ -108,4 +108,4 @@ def snow_reflectivity(_temp: float, _wavelength: float, _equdiameters: list):
 
 
 rain_reflecitivity(-5, [0.0325, 0.07, 0.14], [1, 2, 3, 4])
-# snow_reflectivity(-10, 0.0325, [1, 2, 3, 4, 9])
+snow_reflectivity(-10, 0.0325, [1, 2, 3, 4, 9])
